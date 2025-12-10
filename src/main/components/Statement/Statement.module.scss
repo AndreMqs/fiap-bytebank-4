@@ -1,0 +1,72 @@
+.statementContainer {
+  width: 282px;
+  height: 600px;
+  background-color: #F5F5F5;
+  padding: 32px 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 500px;
+  }
+
+  .statementHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    max-width: 240px;
+    width: 100%;
+  }
+  
+  .headerTitle {
+    font-size: 25px;
+    color: #000000;
+    font-weight: 700;
+    line-height: 30.26px;
+  }
+  
+  .headerButton {
+    font-size: 25px;
+    width: 40px;
+    height: 40px;
+    background-color: #004D61 !important;
+    color: #fff !important;
+  
+    &:hover {
+      background-color: #DEE9EA !important;
+      color: #004D61 !important;
+    }
+  }
+  
+  .headerButtonsContainer {
+    display: flex;
+    gap: 16px;
+    margin-left: 16px;
+    
+    :global(.MuiBadge-root) {
+      .MuiBadge-badge {
+        background-color: #FF5031;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+      }
+    }
+  }
+
+  .statementsListContainer {
+    max-width: 240px;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+  }
+}
+
