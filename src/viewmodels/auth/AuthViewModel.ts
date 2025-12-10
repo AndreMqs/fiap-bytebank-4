@@ -1,5 +1,6 @@
 // src/viewmodels/auth/AuthViewModel.ts
 import { BehaviorSubject } from 'rxjs'
+import { secureStorage } from '../../infra/crypto/secureStorage';
 import { auth, firebaseEnabled } from '../../infra/firebase/firebaseClient'
 import {
   signInWithEmailAndPassword,
@@ -33,6 +34,17 @@ export class AuthViewModel {
   private state$ = new BehaviorSubject<AuthState>(initialState)
 
   constructor() {
+    // Primeiro, tenta recuperar usuário salvo criptografado
+    const savedUser = secureStorage.get<AuthUser>('auth_user');
+
+    if (!firebaseEnabled || !auth) {
+      this.state$.next({
+        ...this.state$.value,
+        user: savedUser || null,
+        initialized: true,
+      });
+      return;
+    }
     // Se o Firebase estiver desligado, só marcamos como inicializado
     if (!firebaseEnabled || !auth) {
       this.state$.next({
@@ -75,15 +87,19 @@ export class AuthViewModel {
   async login(email: string, password: string) {
     // 🔓 BYPASS DE TESTE
     if (email === 'teste@teste.com' && password === '123456') {
+      const user: AuthUser = { uid: 'bypass-user', email };
+      secureStorage.set('auth_user', user);
+
       this.state$.next({
-        user: { uid: 'bypass-user', email },
+        user,
         loading: false,
         error: null,
         initialized: true,
         bypass: true,
-      })
-      return
+      });
+      return;
     }
+
 
     // Se Firebase estiver desligado, não tenta autenticar de verdade
     if (!firebaseEnabled || !auth) {
@@ -101,6 +117,7 @@ export class AuthViewModel {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password)
       const user = this.mapFirebaseUser(cred.user)
+      secureStorage.set('auth_user', user);
       this.state$.next({
         user,
         loading: false,
@@ -133,6 +150,7 @@ export class AuthViewModel {
     }
 
     await signOut(auth)
+    secureStorage.remove('auth_user');
     this.state$.next({
       ...initialState,
       initialized: true,
