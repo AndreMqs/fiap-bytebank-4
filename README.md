@@ -1,77 +1,312 @@
-# Postech Banking MVVM — Projeto Único Unificado
+# 🏦 ByteBank - Sistema Bancário Moderno
 
-Este projeto unifica os antigos microfronts:
+> Aplicação web bancária desenvolvida com **React**, **TypeScript**, **Firebase** e arquitetura **MVVM** seguindo os princípios de **Clean Architecture**.
 
-- `fiap_mf_home` → agora em `src/home`
-- `fiap_mf_main` → agora em `src/main`
+[![React](https://img.shields.io/badge/React-19.1.0-61DAFB?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.2-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-10.14.1-FFCA28?logo=firebase)](https://firebase.google.com/)
+[![Vite](https://img.shields.io/badge/Vite-6.3.1-646CFF?logo=vite)](https://vitejs.dev/)
 
-Não há mais `package.json`, `vite.config`, `tsconfig` etc. dentro de cada microfront: tudo foi centralizado na raiz.
+## 📋 Índice
 
-## Estrutura
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Arquitetura](#-arquitetura)
+- [Stack Tecnológica](#-stack-tecnológica)
+- [Requisitos Implementados](#-requisitos-implementados)
+- [Como Executar](#-como-executar)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Documentação](#-documentação)
 
-- `src/home` — componentes/páginas do antigo projeto Home
-- `src/main` — componentes/páginas do antigo projeto Main
-- `src/app/router.tsx` — define as rotas:
-  - `/` → Home (`src/home/App`)
-  - `/login` → Login (View MVVM)
-  - `/main` → Main (área logada, protegida por `RequireAuth`)
+---
 
-## Scripts
+## 🎯 Sobre o Projeto
 
-- `npm run dev` — inicia a aplicação única (Vite)
-- `npm run build` — build de produção
-- `npm run preview` — preview do build
-- `npm run lint` — lint
+O **ByteBank** é uma aplicação web bancária moderna que implementa uma arquitetura robusta seguindo os princípios de **Clean Architecture** e o padrão **MVVM (Model-View-ViewModel)**.
 
-## Variáveis de Ambiente
+### Características Principais
 
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+- ✅ **Arquitetura Modular** - Código organizado e escalável
+- ✅ **State Management Avançado** - React Query + Zustand + RxJS
+- ✅ **Clean Architecture** - Separação de camadas (Presentation, Domain, Infrastructure)
+- ✅ **Performance Otimizada** - Lazy loading, code splitting, cache inteligente
+- ✅ **Programação Reativa** - RxJS em ViewModels (MVVM)
+- ✅ **Mobile First** - Design responsivo para todos os dispositivos
+- ✅ **Segurança** - Autenticação Firebase + Criptografia AES
+- ✅ **Integração Firebase** - Firestore, Auth e Storage
 
-```env
-# Chave de criptografia para armazenamento seguro (OBRIGATÓRIA)
-# Use uma chave forte e única. Em produção, nunca compartilhe esta chave.
-VITE_ENCRYPTION_KEY=your-secret-encryption-key-here
+---
 
-# Firebase (opcional - se não configurado, o Firebase será desabilitado)
-VITE_FIREBASE_API_KEY=your-api-key
-VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
-VITE_FIREBASE_PROJECT_ID=your-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-VITE_FIREBASE_APP_ID=your-app-id
+## 🏗️ Arquitetura
 
-# Desabilitar Firebase (opcional)
-# VITE_FIREBASE_DISABLED=true
+### Padrão MVVM (Model-View-ViewModel)
+
+O projeto segue o padrão **MVVM** para separação de responsabilidades:
+
+```
+┌─────────────┐         ┌──────────────┐         ┌─────────────┐
+│    VIEW     │ ◄─────► │  VIEWMODEL   │ ◄─────► │    MODEL    │
+│ (Component) │         │   (RxJS)     │         │  (Domain)   │
+└─────────────┘         └──────────────┘         └─────────────┘
+     │                        │                        │
+     │                        │                        │
+     └────────────────────────┴────────────────────────┘
+                    useReactive Hook
 ```
 
-**⚠️ IMPORTANTE:** A variável `VITE_ENCRYPTION_KEY` é **obrigatória** em produção. Sem ela, a aplicação não funcionará corretamente. Use uma chave forte e única (mínimo 32 caracteres recomendado).
+### Clean Architecture
 
-## Integração com MVVM + Firebase
+```
+┌─────────────────────────────────────────┐
+│         PRESENTATION LAYER                │
+│  • Componentes React                     │
+│  • Hooks customizados                    │
+│  Depende de: Domain                       │
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│           DOMAIN LAYER                   │
+│  • Entities                              │
+│  • Use Cases                             │
+│  • Business Rules                        │
+│  NÃO depende de: Infrastructure          │
+└─────────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────────┐
+│       INFRASTRUCTURE LAYER               │
+│  • Repositories                          │
+│  • Firebase Client                        │
+│  • React Query Config                    │
+│  Depende de: Domain                      │
+└─────────────────────────────────────────┘
+```
 
-- `src/viewmodels/auth/AuthViewModel.ts` — MVVM de autenticação com Firebase
-- `src/hooks/useAuth.ts` — hook para usar o AuthViewModel nas Views
-- `src/presentation/components/layout/RequireAuth.tsx` — guard para rotas protegidas
-- `src/viewmodels/dashboard/DashboardViewModel.ts` + `src/domain/usecases/GetUserTransactions.ts` + `src/infra/repositories/TransactionRepository.ts` — exemplo completo de extrato
-- `src/main/pages/TransactionsPage.tsx` — página de exemplo usando o ViewModel de Dashboard na área logada.
+### State Management
 
-## Índices do Firestore
+```
+React Query (Server State) → Zustand (UI State) → RxJS (Reactive)
+     ↓                           ↓                      ↓
+  Dados do servidor          Modais/Filtros        ViewModels
+```
 
-O projeto requer um índice composto no Firestore para consultar transações por `userId` e ordenar por `date`. 
+---
+
+## 🛠️ Stack Tecnológica
+
+### Core
+- **React 19.1.0** - Biblioteca JavaScript para interfaces
+- **TypeScript 5.7.2** - Tipagem estática
+- **Vite 6.3.1** - Build tool de alta performance
+
+### State Management
+- **@tanstack/react-query 4.30.0** - Server state e cache
+- **Zustand 5.0.6** - UI state (leve e performático)
+- **RxJS 7.8.0** - Programação reativa (ViewModels)
+
+### UI & Styling
+- **Material-UI 7.0.2** - Componentes de UI
+- **Emotion 11.14.0** - CSS-in-JS
+- **SASS 1.87.0** - Pré-processador CSS
+- **Recharts 3.1.0** - Gráficos
+
+### Backend
+- **Firebase 10.14.1**
+  - Firebase Auth - Autenticação
+  - Firestore - Banco de dados NoSQL
+  - Firebase Storage - Armazenamento
+
+### Utilities
+- **crypto-js 4.1.1** - Criptografia AES
+- **lodash 4.17.21** - Utilitários JavaScript
+- **react-router-dom 6.14.0** - Roteamento
+
+---
+
+## ✅ Requisitos Implementados
+
+| Requisito | Status | Implementação |
+|-----------|--------|---------------|
+| **Arquitetura Modular** | ✅ | Estrutura modular bem definida |
+| **State Management Avançado** | ✅ | React Query + Zustand + RxJS |
+| **Clean Architecture** | ✅ | Camadas separadas corretamente |
+| **Lazy Loading** | ✅ | Rotas, componentes e modais |
+| **Cache** | ✅ | React Query + Secure Storage |
+| **Programação Reativa** | ✅ | RxJS em ViewModels (MVVM) |
+| **Mobile First** | ✅ | Breakpoints padronizados |
+| **Segurança** | ✅ | Firebase Auth + Criptografia AES |
+
+---
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+
+- **Node.js** 18+ e npm
+- **Firebase Project** configurado
+- **Variáveis de ambiente** configuradas
+
+### Instalação
+
+1. **Clone o repositório:**
+```bash
+git clone <repository-url>
+cd fiap-bytebank-4
+```
+
+2. **Instale as dependências:**
+```bash
+npm install
+```
+
+3. **Configure as variáveis de ambiente:**
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=sua-api-key
+VITE_FIREBASE_AUTH_DOMAIN=seu-auth-domain
+VITE_FIREBASE_PROJECT_ID=seu-project-id
+VITE_FIREBASE_STORAGE_BUCKET=seu-storage-bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=seu-sender-id
+VITE_FIREBASE_APP_ID=seu-app-id
+
+# Encryption Key (OBRIGATÓRIA em produção)
+# Use uma chave forte e única (mínimo 32 caracteres)
+VITE_ENCRYPTION_KEY=sua-chave-de-criptografia-secreta
+
+# Opcional: Desabilitar Firebase (desenvolvimento)
+# VITE_FIREBASE_DISABLED=false
+```
+
+**⚠️ IMPORTANTE:** A variável `VITE_ENCRYPTION_KEY` é **obrigatória** em produção. Use uma chave forte e única.
+
+4. **Execute o projeto:**
+```bash
+npm run dev
+```
+
+O projeto estará disponível em `http://localhost:5173`
+
+### Scripts Disponíveis
+
+```bash
+npm run dev      # Desenvolvimento
+npm run build    # Build de produção
+npm run preview  # Preview da build
+npm run lint     # Linter
+```
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+├── app/              # Configuração da aplicação
+│   ├── App.tsx       # Providers globais
+│   └── router.tsx    # Rotas
+│
+├── domain/           # Camada de Domínio
+│   ├── entities/     # Entidades de negócio
+│   └── usecases/     # Casos de uso
+│
+├── infra/            # Camada de Infraestrutura
+│   ├── firebase/     # Configuração Firebase
+│   ├── react-query/  # Configuração React Query
+│   ├── repositories/ # Repositórios
+│   └── crypto/       # Criptografia
+│
+├── presentation/      # Camada de Apresentação
+│   └── components/   # Componentes compartilhados
+│
+├── viewmodels/       # ViewModels (MVVM)
+│   ├── auth/         # AuthViewModel
+│   └── dashboard/    # DashboardViewModel
+│
+├── home/             # Módulo Landing Page
+│   ├── components/
+│   └── App.tsx
+│
+└── main/             # Módulo Aplicação Principal
+    ├── components/
+    ├── hooks/
+    ├── store/
+    └── App.tsx
+```
+
+---
+
+## 📚 Documentação
+
+### Documentação Completa
+
+- **[DOCUMENTACAO_DAS.md](./DOCUMENTACAO_DAS.md)** - Documentação de Arquitetura de Software completa
+
+### Estrutura do Firebase
+
+**Collections necessárias:**
+
+1. **users**
+   - `id`, `name`, `email`, `balance`, `createdAt`, `updatedAt`
+
+2. **transactions**
+   - `userId`, `type`, `category`, `value`, `date`, `createdAt`, `updatedAt`
+
+3. **investments**
+   - `userId`, `type`, `value`, `createdAt`, `updatedAt`
+
+### Índices do Firestore
+
+O projeto requer um índice composto para consultar transações por `userId` e ordenar por `date`.
 
 **Opção 1: Criar via Console (Recomendado)**
-1. Quando você executar a aplicação e tentar visualizar transações, o Firebase mostrará um erro com um link direto
-2. Clique no link fornecido no erro do console do navegador
-3. O Firebase Console abrirá automaticamente com o índice pré-configurado
-4. Clique em "Criar índice" e aguarde alguns minutos até que o índice seja criado
+1. Execute a aplicação e tente visualizar transações
+2. O Firebase mostrará um erro com link direto
+3. Clique no link e crie o índice no Firebase Console
 
 **Opção 2: Deploy via Firebase CLI**
-Se você tiver o Firebase CLI instalado:
 ```bash
 firebase deploy --only firestore:indexes
 ```
 
-O arquivo `firestore.indexes.json` já está configurado na raiz do projeto com o índice necessário.
+O arquivo `firestore.indexes.json` já está configurado na raiz.
 
-## Observações
+---
 
-Alguns imports absolutos ou aliases dos projetos originais podem precisar de ajuste (por exemplo, caminhos que assumiam `@/` ou root diferente). O núcleo agora está pronto como **um único projeto Vite + React + MVVM + Firebase**, cabendo a você apenas ajustar alguns detalhes de import/layout e avançar na migração das telas.
+## 🎯 Rotas da Aplicação
+
+- `/` - Landing page (Home)
+- `/main` - Área logada (protegida por `RequireAuth`)
+
+---
+
+## 🔐 Segurança
+
+- ✅ Autenticação via Firebase Auth
+- ✅ Criptografia AES para dados sensíveis
+- ✅ Proteção de rotas com `RequireAuth`
+- ✅ Variáveis de ambiente para chaves secretas
+
+---
+
+## 📊 Performance
+
+- ✅ Lazy loading de rotas e componentes
+- ✅ Code splitting otimizado
+- ✅ Cache inteligente com React Query
+- ✅ Pré-carregamento de rotas críticas
+- ✅ Mobile First com breakpoints padronizados
+
+---
+
+## 🤝 Contribuindo
+
+Este é um projeto acadêmico desenvolvido para demonstrar arquitetura frontend moderna.
+
+---
+
+## 📄 Licença
+
+Este projeto é de uso acadêmico.
+
+---
