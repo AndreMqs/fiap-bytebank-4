@@ -1,15 +1,17 @@
 import styles from './MyCards.module.scss';
+import CardCredit from '../../images/CardBlue.svg';
+import CardDebit from '../../images/CardGray.png';
 
 // Mock data local
 const cardsMock = [
   {
     type: 'Crédito',
-    image: '/src/images/Card.svg',
+    image: CardCredit,
     function: 'Crédito'
   },
   {
     type: 'Débito',
-    image: '/src/images/Card.svg',
+    image: CardDebit,
     function: 'Débito'
   }
 ];
