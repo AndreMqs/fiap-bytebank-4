@@ -6,7 +6,6 @@ import { GetBankUser } from '../../domain/usecases/GetBankUser'
 import { transactionRepository } from '../../infra/repositories/TransactionRepository'
 import { userRepository } from '../../infra/repositories/UserRepository'
 import { queryKeys } from '../../infra/react-query/queryKeys'
-import { useStore } from '../store/useStore'
 import { TransactionFormData as TransactionFormDataString } from '../types/transaction'
 import { TransactionFormData } from '../types/api'
 
@@ -14,10 +13,15 @@ const updateTransactionUseCase = new UpdateTransaction(transactionRepository)
 const updateUserUseCase = new UpdateUser(userRepository)
 const getUserUseCase = new GetBankUser(userRepository)
 
+/**
+ * Hook para atualizar transação usando React Query Mutation
+ * 
+ * Invalida queries automaticamente após sucesso.
+ * Não usa Zustand - React Query gerencia o estado.
+ */
 export function useUpdateTransaction() {
   const { user: authUser } = useAuth()
   const queryClient = useQueryClient()
-  const { user, setUser } = useStore()
 
   const mutation = useMutation({
     mutationFn: async ({ transactionId, data }: { 
@@ -74,16 +78,10 @@ export function useUpdateTransaction() {
 
       return { transaction: updatedTransaction, newBalance }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
+      // Invalidar queries para forçar refetch com dados atualizados
       queryClient.invalidateQueries({ queryKey: queryKeys.transactions(authUser?.uid) })
       queryClient.invalidateQueries({ queryKey: queryKeys.user(authUser?.uid) })
-
-      if (user) {
-        setUser({
-          ...user,
-          balance: data.newBalance,
-        })
-      }
     },
     onError: (error) => {
       console.error('Erro ao atualizar transação:', error)

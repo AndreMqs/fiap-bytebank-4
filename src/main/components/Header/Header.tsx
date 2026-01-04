@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -11,17 +12,19 @@ import Fechar from "../../images/Fechar.svg";
 import { HeaderProps } from "../../types/header";
 
 import { useAuth } from '../../../hooks/useAuth';
-import { useStore } from '../../store/useStore';
+import { useUserData } from '../../hooks/useUserData';
+
 
 import styles from "./Header.module.scss"
 
 
 export default function Header(props: HeaderProps) {
   const {items, onMenuClick} = props;
-  const { logout } = useAuth();
+  const { logout, user: authUser } = useAuth();
   const navigate = useNavigate();
-  const { setUser, setTransactions, user } = useStore();
+  const queryClient = useQueryClient();
   
+  const { user } = useUserData();
   const userName = user?.name || '';
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,8 +48,7 @@ export default function Header(props: HeaderProps) {
     e.preventDefault();
     e.stopPropagation();
     
-    setUser(null);
-    setTransactions([]);
+    queryClient.clear();
     
     await logout();
     

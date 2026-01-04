@@ -1,8 +1,8 @@
 import { useState, useCallback, useMemo } from "react";
 
-import { useStore } from "../../store/useStore";
 import { useUserData } from "../../hooks/useUserData";
 import { useTransactionsData } from "../../hooks/useTransactionsData";
+import { useDeleteTransaction } from "../../hooks/useDeleteTransaction";
 import Header from "../Header/Header";
 import Menu from "../Menu/Menu";
 import Summary from "../Summary/Summary";
@@ -15,12 +15,16 @@ import CategoryChart from "../CategoryChart/CategoryChart";
 import styles from "./MainPage.module.scss";
 
 export default function MainPage() {
-  const { user, transactions, deleteTransaction } = useStore();
   const [selectedMenu, setSelectedMenu] = useState("Início");
 
-  // Buscar dados do usuário e transações usando React Query
-  const { isLoading: isLoadingUser } = useUserData();
-  const { isLoading: isLoadingTransactions } = useTransactionsData();
+
+  const { user, isLoading: isLoadingUser } = useUserData();
+  const { transactions, isLoading: isLoadingTransactions } = useTransactionsData();
+  const { deleteTransactionAsync } = useDeleteTransaction();
+  
+  const deleteTransaction = useCallback(async (id: number) => {
+    await deleteTransactionAsync(id);
+  }, [deleteTransactionAsync]);
 
   const handleMenuClick = useCallback((title: string) => {
     setSelectedMenu(title);

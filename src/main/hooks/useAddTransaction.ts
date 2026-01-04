@@ -2,20 +2,21 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../../hooks/useAuth'
 import { AddBankTransaction } from '../../domain/usecases/AddBankTransaction'
 import { UpdateUser } from '../../domain/usecases/UpdateUser'
+import { GetBankUser } from '../../domain/usecases/GetBankUser'
 import { transactionRepository } from '../../infra/repositories/TransactionRepository'
 import { userRepository } from '../../infra/repositories/UserRepository'
 import { queryKeys } from '../../infra/react-query/queryKeys'
-import { useStore } from '../store/useStore'
 import { TransactionFormData as TransactionFormDataString } from '../types/transaction'
 import { TransactionFormData } from '../types/api'
 
 const addTransactionUseCase = new AddBankTransaction(transactionRepository)
 const updateUserUseCase = new UpdateUser(userRepository)
+const getUserUseCase = new GetBankUser(userRepository)
+
 
 export function useAddTransaction() {
   const { user: authUser } = useAuth()
   const queryClient = useQueryClient()
-  const { user, setUser } = useStore()
 
   const mutation = useMutation({
     mutationFn: async (data: TransactionFormData | TransactionFormDataString) => {
@@ -42,32 +43,20 @@ export function useAddTransaction() {
 
       const newTransaction = await addTransactionUseCase.execute(authUser.uid, transactionDataForUseCase)
 
+      const currentUser = await getUserUseCase.execute(authUser.uid)
       const balanceChange = transactionType === 'income' 
         ? transactionValue 
         : -transactionValue
+      const newBalance = currentUser.balance + balanceChange
 
-      const newBalance = (user?.balance || 0) + balanceChange
-
-      if (user) {
-        await updateUserUseCase.execute(authUser.uid, {
-          balance: newBalance,
-        })
-      }
+      await updateUserUseCase.execute(authUser.uid, {
+        balance: newBalance,
+      })
 
       return { transaction: newTransaction, newBalance }
     },
-    onSuccess: async (data, variables) => {
-      if (user) {
-        setUser({
-          ...user,
-          balance: data.newBalance,
-        })
-      }
-
-      queryClient.resetQueries({ 
-        queryKey: queryKeys.transactions(authUser?.uid)
-      })
-      
+    onSuccess: async () => {
+      // Invalidar queries para forçar refetch com dados atualizados
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.transactions(authUser?.uid),
         refetchType: 'active'
@@ -76,11 +65,6 @@ export function useAddTransaction() {
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.user(authUser?.uid),
         refetchType: 'active'
-      })
-
-      await queryClient.refetchQueries({ 
-        queryKey: queryKeys.transactions(authUser?.uid),
-        type: 'active'
       })
     },
     onError: (error) => {
