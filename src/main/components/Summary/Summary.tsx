@@ -24,10 +24,11 @@ export default function Summary(props: SummaryProps) {
   }
 
   const renderTitle = () => {
+    const displayName = username && username.trim() ? username : '';
     return (
       <div className={styles.summaryTitle}>
         <span className={styles.userName}>
-          {`Olá, ${username}! :)`}
+          {displayName ? `Olá, ${displayName}! :)` : 'Olá! :)'}
         </span>
         <span className={styles.date}>
           {parseDateString(date)}

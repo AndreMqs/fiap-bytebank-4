@@ -1,10 +1,14 @@
-import { BankRepository } from '../../infra/repositories/BankRepository'
+import { UserRepository } from '../../infra/repositories/UserRepository'
 import { BankUser } from '../entities/BankUser'
 
 export class GetBankUser {
-  constructor(private repo: BankRepository) {}
+  constructor(private repo: UserRepository) {}
 
-  async execute(): Promise<BankUser> {
-    return this.repo.getUser()
+  async execute(userId: string): Promise<BankUser> {
+    if (!userId) {
+      throw new Error('ID do usuário é obrigatório')
+    }
+
+    return this.repo.getUser(userId)
   }
 }

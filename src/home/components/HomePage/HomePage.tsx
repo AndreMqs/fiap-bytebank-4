@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import HeaderHomePage from "./HeaderHomePage/HeaderHomePage";
 import ContentHomePage from "./ContentHomePage/ContentHomePage";
@@ -9,8 +10,19 @@ import RegisterModal from "./RegisterModal/RegisterModal";
 import styles from "./HomePage.module.scss"
 
 export default function HomePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
+
+  useEffect(() => {
+    const loginParam = searchParams.get('login');
+    if (loginParam === 'true') {
+      setOpenLogin(true);
+
+      searchParams.delete('login');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const toggleLogin = () => {
     setOpenLogin((prev) => !prev);

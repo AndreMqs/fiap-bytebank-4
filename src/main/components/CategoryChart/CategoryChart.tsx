@@ -14,7 +14,7 @@ const ChartWrapper = ({ children, width, height }: { children: React.ReactNode; 
 };
 
 export default function CategoryChart() {
-  const { getCategoryData } = useStore();
+  const { getCategoryData, transactions } = useStore();
   const data = getCategoryData();
 
   const [isMobile, setIsMobile] = useState(false);
@@ -28,6 +28,11 @@ export default function CategoryChart() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+
+  useEffect(() => {
+
+  }, [transactions]);
+
   if (!hasMounted) return null;
 
   if (!data || data.length === 0) {
@@ -35,7 +40,7 @@ export default function CategoryChart() {
       <div className={styles.categoryChartContainer}>
         <div className={styles.categoryChartContent}>
           <span className={styles.title}>Gastos por Categoria</span>
-          <div>Nenhum dado disponível</div>
+          <div className={styles.noData}>Nenhum dado disponível</div>
         </div>
       </div>
     );

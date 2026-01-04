@@ -1,5 +1,5 @@
+import { useEffect, useState } from 'react';
 import IlustracaoBanner from '../../../images/IlustracaoBanner.svg';
-import { useUser } from '../../../hooks/useParentApp';
 import { useAuth } from '../../../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,39 +11,71 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ open, onClose }: LoginModalProps) {
-  const { setUserName, getUserName } = useUser();
-  const { login, loading, error } = useAuth();
+  const { login, loading, error, user } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [emailError, setEmailError] = useState('');
+
+  useEffect(() => {
+    if (user && !loading && !error) {
+      navigate('/main');
+      onClose();
+    }
+  }, [user, loading, error, navigate, onClose]);
+
+  useEffect(() => {
+    if (!open) {
+      setEmail('');
+      setSenha('');
+      setEmailError('');
+    }
+  }, [open]);
 
   if (!open) return null;
 
-  const getUser = (formData: FormData) => {
-    const localUserName = getUserName();
-
-    if (localUserName !== 'Cliente') {
-      return localUserName;
+  const validateEmail = (value: string): string => {
+    if (!value.trim()) {
+      return 'Email é obrigatório';
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      return 'Email inválido. Digite um email válido (ex: exemplo@email.com)';
+    }
+    return '';
+  };
 
-    return String(formData.get('email'));
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (value.trim()) {
+      setEmailError(validateEmail(value));
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const handleEmailBlur = () => {
+    setEmailError(validateEmail(email));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const formData = new FormData(e.currentTarget);
-    const email = String(formData.get('email') ?? '');
-    const senha = String(formData.get('senha') ?? '');
-
-    setUserName(getUser(formData));
-
-    // usa MVVM de autenticação (com bypass para teste@teste.com / 123456)
-    await login(email, senha);
-
-    if (email === 'teste@teste.com' && senha === '123456') {
-      navigate('/main');
-      onClose();
+    const emailValidation = validateEmail(email);
+    if (emailValidation) {
+      setEmailError(emailValidation);
+      return;
     }
+
+    if (!senha.trim()) {
+      return;
+    }
+
+    await login(email, senha);
   };
+
+  const isFormValid = email.trim() !== '' && senha.trim() !== '' && emailError === '';
 
   return (
     <div className={styles.modalOverlay}>
@@ -56,20 +88,24 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         <form className={styles.form} onSubmit={handleSubmit} autoComplete="off">
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="login-email">
-              Email
+              Email <span className={styles.required}>*</span>
             </label>
             <input
               id="login-email"
               name="email"
-              className={styles.input}
+              className={`${styles.input} ${emailError ? styles.inputError : ''}`}
               type="email"
               placeholder="Digite seu email"
+              value={email}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
               required
             />
+            {emailError && <span className={styles.helpText}>{emailError}</span>}
           </div>
           <div className={styles.fieldGroup}>
             <label className={styles.label} htmlFor="login-senha">
-              Senha
+              Senha <span className={styles.required}>*</span>
             </label>
             <input
               id="login-senha"
@@ -77,16 +113,19 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
               className={styles.input}
               type="password"
               placeholder="Digite sua senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
               required
             />
           </div>
-          <a href="#" className={styles.forgotPassword}>
-            Esqueci a senha!
-          </a>
-          <button type="submit" className={styles.submitButton} disabled={loading}>
+          <button 
+            type="submit" 
+            className={styles.submitButton} 
+            disabled={loading || !isFormValid}
+          >
             {loading ? 'Entrando...' : 'Acessar'}
           </button>
-          {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
+          {error && <p className={styles.errorMessage}>{error}</p>}
         </form>
       </div>
     </div>

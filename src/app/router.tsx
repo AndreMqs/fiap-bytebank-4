@@ -2,7 +2,6 @@ import React, { Suspense } from 'react'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { RequireAuth } from '../presentation/components/layout/RequireAuth'
 
-const LoginView = React.lazy(() => import('../presentation/views/LoginView'))
 const HomeModule = React.lazy(() => import('../home/App'))
 const MainModule = React.lazy(() => import('../main/App'))
 
@@ -12,14 +11,6 @@ export const router = createBrowserRouter([
     element: (
       <Suspense fallback={<div>Carregando...</div>}>
         <HomeModule />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/login',
-    element: (
-      <Suspense fallback={<div>Carregando...</div>}>
-        <LoginView />
       </Suspense>
     ),
   },

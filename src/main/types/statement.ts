@@ -23,13 +23,17 @@ export interface StatementProps {
 export interface SingleStatementProps {
   transaction: Transaction;
   isEditing: boolean;
-  deleteTransaction: (id: number) => Promise<void>;
+  onEdit?: (transaction: Transaction) => void;
+  onDelete?: (transaction: Transaction) => void;
+  deleteTransaction?: (id: number) => Promise<void>; 
 }
 
 export interface StatementListProps {
   statementsByMonth: Map<string, Transaction[]>;
   isEditing: boolean;
-  deleteTransaction: (id: number) => Promise<void>;
+  onEdit?: (transaction: Transaction) => void;
+  onDelete?: (transaction: Transaction) => void;
+  deleteTransaction?: (id: number) => Promise<void>; 
   onLoadMore?: () => void;
   hasMore?: boolean;
   isLoading?: boolean;

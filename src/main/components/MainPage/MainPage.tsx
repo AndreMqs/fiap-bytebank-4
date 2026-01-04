@@ -1,6 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import { useStore } from "../../store/useStore";
+import { useUserData } from "../../hooks/useUserData";
+import { useTransactionsData } from "../../hooks/useTransactionsData";
 import Header from "../Header/Header";
 import Menu from "../Menu/Menu";
 import Summary from "../Summary/Summary";
@@ -13,13 +15,12 @@ import CategoryChart from "../CategoryChart/CategoryChart";
 import styles from "./MainPage.module.scss";
 
 export default function MainPage() {
-  const { user, transactions, fetchUser, fetchTransactions, deleteTransaction } = useStore();
+  const { user, transactions, deleteTransaction } = useStore();
   const [selectedMenu, setSelectedMenu] = useState("Início");
 
-  useEffect(() => {
-    fetchUser();
-    fetchTransactions();
-  }, [fetchUser, fetchTransactions]);
+  // Buscar dados do usuário e transações usando React Query
+  const { isLoading: isLoadingUser } = useUserData();
+  const { isLoading: isLoadingTransactions } = useTransactionsData();
 
   const handleMenuClick = useCallback((title: string) => {
     setSelectedMenu(title);
@@ -65,15 +66,29 @@ export default function MainPage() {
   }, [selectedMenu]);
 
   const renderMiddleContent = useCallback(() => {
-    if (!user) return <div>Carregando usuário...</div>;
+    if (isLoadingUser || isLoadingTransactions) {
+      return (
+        <section id="middleContent" className={styles.middleContentContainer}>
+          <div>Carregando dados...</div>
+        </section>
+      );
+    }
+    
+    if (!user) {
+      return (
+        <section id="middleContent" className={styles.middleContentContainer}>
+          <div>Erro ao carregar dados do usuário</div>
+        </section>
+      );
+    }
     
     return (
       <section id="middleContent" className={styles.middleContentContainer}>
-        <Summary username={user.name} money={user.balance} />
+        <Summary username={user.name || 'Cliente'} money={user.balance || 0} />
         {mainContent}
       </section>
     );
-  }, [mainContent, user]);
+  }, [mainContent, user, isLoadingUser, isLoadingTransactions]);
 
   return (
     <>

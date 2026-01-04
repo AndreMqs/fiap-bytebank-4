@@ -9,6 +9,11 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+
+  @media (max-width: 425px) {
+    padding: 0;
+    align-items: flex-end;
+  }
 }
 
 .modalContainer {
@@ -19,6 +24,16 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 425px) {
+    width: 100%;
+    max-height: 95vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  @media (max-width: 768px) and (min-width: 426px) {
+    width: 95%;
+  }
 }
 
 .modalTitle {
@@ -30,6 +45,11 @@
   font-weight: 600;
   color: #2F2E41;
   border-bottom: 1px solid #e0e0e0;
+
+  @media (max-width: 425px) {
+    padding: 20px 16px 12px 16px;
+    font-size: 18px;
+  }
 }
 
 .filterCount {
@@ -50,6 +70,11 @@
 .modalContent {
   padding: 24px;
   padding-top: 32px;
+
+  @media (max-width: 425px) {
+    padding: 16px;
+    padding-top: 20px;
+  }
 }
 
 .filterGrid {
@@ -103,6 +128,12 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+
+  @media (max-width: 425px) {
+    padding: 12px 16px 16px 16px;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
 }
 
 .clearButton {
@@ -115,6 +146,12 @@
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s;
+
+  @media (max-width: 425px) {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
 
   &:hover {
     background-color: #f5f5f5;
@@ -132,6 +169,12 @@
   font-weight: 500;
   transition: background-color 0.2s;
 
+  @media (max-width: 425px) {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
   &:hover {
     background-color: #f5f5f5;
   }
@@ -148,6 +191,13 @@
   font-weight: 500;
   min-width: 100px;
   transition: background-color 0.2s;
+
+  @media (max-width: 425px) {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    min-width: unset;
+  }
 
   &:hover {
     background-color: #1565c0;

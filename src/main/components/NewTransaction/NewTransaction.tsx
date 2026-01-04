@@ -4,8 +4,9 @@ import { ModeSelector } from './ModeSelector';
 import { ManualTransactionForm } from './ManualTransactionForm';
 import { CSVTransactionPreview } from './CSVTransactionPreview';
 import { useTransactionForm } from '../../hooks/useTransactionForm';
+import { useAddTransaction } from '../../hooks/useAddTransaction';
 import { useValueValidation } from '../../utils/valueValidationUtils';
-import { createTransactionFromForm, createTransactionsFromCSV, getButtonText, isFormValid } from '../../utils/transactionUtils';
+import { createTransactionFromForm, createTransactionsFromCSV, getButtonText } from '../../utils/transactionUtils';
 import { NewTransactionProps } from '../../types/components';
 import { CSVTransaction } from '../../types/transaction';
 import styles from "./NewTransaction.module.scss";
@@ -21,16 +22,20 @@ export default function NewTransaction({
     inputMode,
     csvTransactions,
     valueError,
+    errors,
+    touched,
     updateFormField,
+    handleBlur,
     setIsFocused,
     setInputMode,
     setCsvTransactions,
     setValueError,
     clearForm,
     clearCSV,
-    addTransaction
+    isFormValid
   } = useTransactionForm();
 
+  const { addTransactionAsync, isLoading: isAddingTransaction } = useAddTransaction();
   const { validateValue, filterInvalidCharacters } = useValueValidation();
 
   const isMobile = useMemo(() => 
@@ -38,23 +43,45 @@ export default function NewTransaction({
     []
   );
 
-  const handleFinishTransaction = () => {
+  const handleFinishTransaction = async () => {
     if (inputMode === 'manual') {
-      const transaction = createTransactionFromForm(
-        formData.type,
-        formData.category,
-        formData.value,
-        formData.date
-      );
-      addTransaction(transaction);
-      clearForm();
-      onTransactionAdded?.();
+      try {
+        const type = formData.type === 'Receita' ? 'income' : formData.type === 'Despesa' ? 'expense' : formData.type;
+        
+        const transactionData: TransactionFormData = {
+          type: type as 'income' | 'expense',
+          category: formData.category as 'Alimentação' | 'Moradia' | 'Saúde' | 'Estudo' | 'Transporte',
+          value: formData.value,
+          date: formData.date,
+        };
+        
+        await addTransactionAsync(transactionData);
+        clearForm();
+        onTransactionAdded?.();
+      } catch (error) {
+        console.error('Erro ao adicionar transação:', error);
+      }
     } else if (inputMode === 'csv' && csvTransactions.length > 0) {
-      const transactions = createTransactionsFromCSV(csvTransactions);
-      transactions.forEach(addTransaction);
-      clearCSV();
-      setInputMode('manual');
-      onTransactionAdded?.();
+      try {
+        const transactions = createTransactionsFromCSV(csvTransactions);
+        
+        // Adicionar todas as transações
+        for (const transaction of transactions) {
+          const transactionData: TransactionFormData = {
+            type: transaction.type,
+            category: transaction.category,
+            value: String(transaction.value),
+            date: transaction.date,
+          };
+          await addTransactionAsync(transactionData);
+        }
+        
+        clearCSV();
+        setInputMode('manual');
+        onTransactionAdded?.();
+      } catch (error) {
+        console.error('Erro ao adicionar transações do CSV:', error);
+      }
     }
   };
 
@@ -72,7 +99,8 @@ export default function NewTransaction({
 
 
   const buttonText = getButtonText(isMobile, inputMode, csvTransactions.length);
-  const formIsValid = isFormValid(inputMode, formData, valueError, csvTransactions);
+  const formIsValidForCSV = inputMode === 'csv' ? csvTransactions.length > 0 : true;
+  const formIsValidForManual = inputMode === 'manual' ? isFormValid : formIsValidForCSV;
 
   return (
     <div id='newTransaction' className={`${styles.transactionContainer} ${className}`}>
@@ -89,9 +117,12 @@ export default function NewTransaction({
             formData={formData}
             isFocused={isFocused}
             valueError={valueError}
+            errors={errors}
+            touched={touched}
             onFieldChange={updateFormField}
             onValueChange={handleValueChange}
             onFocusChange={setIsFocused}
+            onBlur={handleBlur}
             onClear={clearForm}
           />
         ) : (
@@ -109,7 +140,6 @@ export default function NewTransaction({
             <button 
               className={styles.clearButton}
               onClick={clearForm}
-              disabled={!formData.type && !formData.category && !formData.value}
             >
               Limpar
             </button>
@@ -125,9 +155,9 @@ export default function NewTransaction({
         <button 
           className={styles.finishTransaction}
           onClick={handleFinishTransaction}
-            disabled={!formIsValid || disabled}
+          disabled={!formIsValidForManual || disabled || isAddingTransaction}
         >
-            {buttonText}
+          {isAddingTransaction ? 'Salvando...' : buttonText}
         </button>
         </div>
       </div>

@@ -11,7 +11,9 @@ import styles from "./StatementList.module.scss"
 export default function StatementList(props: StatementListProps) {
   const {
     statementsByMonth, 
-    isEditing, 
+    isEditing,
+    onEdit,
+    onDelete,
     deleteTransaction, 
     onLoadMore, 
     hasMore = false, 
@@ -30,7 +32,9 @@ export default function StatementList(props: StatementListProps) {
       statementsByMonth.get(month)?.map((statement, index) =>
         <SingleStatement 
           transaction={statement} 
-          isEditing={isEditing} 
+          isEditing={isEditing}
+          onEdit={onEdit}
+          onDelete={onDelete}
           deleteTransaction={deleteTransaction}
           key={`${month}-${statement.id}-${index}`}
         />

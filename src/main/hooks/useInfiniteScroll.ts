@@ -31,8 +31,22 @@ export function useInfiniteScroll({
     const element = loadingRef.current;
     if (!element) return;
 
+    let scrollContainer: Element | null = null;
+    let current: Element | null = element.parentElement;
+    
+    while (current) {
+      const classList = Array.from(current.classList);
+      if (classList.some(cls => cls.includes('statementsListContainer') || cls.includes('statementListWrapper'))) {
+        scrollContainer = current;
+        break;
+      }
+      current = current.parentElement;
+    }
+
     observerRef.current = new IntersectionObserver(handleObserver, {
-      rootMargin: `${threshold}px`
+      root: scrollContainer,
+      rootMargin: `${threshold}px`,
+      threshold: 0.1
     });
 
     observerRef.current.observe(element);
