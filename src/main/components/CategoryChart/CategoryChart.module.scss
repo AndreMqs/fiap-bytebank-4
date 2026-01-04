@@ -1,40 +1,49 @@
+@import '../../utils/breakpoints';
+
 .categoryChartContainer {
+  // Mobile First
   background-color: #CBCBCB;
   border-radius: 8px;
-  padding: 32px;
+  padding: 24px 8px 350px 8px;
   position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background-image: url('../../images/BackgroundDesktop.svg');
-  background-position: bottom right;
+  min-height: 100px;
+  background-position: 30% 95%;
+  background-image: url('../../images/BackgroundMobile.svg');
   background-repeat: no-repeat;
   background-origin: content-box, padding-box;
+  margin-top: 16px;
 
-  @media (max-width: 768px) {
+  // Tablet and up
+  @include tablet-and-up {
     padding: 32px 24px;
     min-height: 350px;
     background-image: url('../../images/BackgroundTablet.svg');
+    background-position: bottom right;
+    margin-top: 0;
   }
-  @media (max-width: 425px) {
-    padding: 24px 8px 350px 8px;
-    min-height: 100px;
-    background-position: 30% 95%;
-    background-image: url('../../images/BackgroundMobile.svg');
-    margin-top: 16px;
+
+  // Desktop and up
+  @include desktop-and-up {
+    padding: 32px;
+    background-image: url('../../images/BackgroundDesktop.svg');
   }
 }
 
 .categoryChartContent {
+  // Mobile First
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 24px;
-  @media (max-width: 425px) {
-    align-items: center;
-    width: 100%;
+
+  // Tablet and up
+  @include tablet-and-up {
+    align-items: flex-start;
   }
 }
 

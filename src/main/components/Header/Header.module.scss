@@ -1,3 +1,5 @@
+@import '../../utils/breakpoints';
+
 .header {
   height: 96px;
   width: 100%;  
@@ -5,30 +7,30 @@
   background-color: #004D61;
 
   & .headerGrid {
+    // Mobile First
     height: 100%;
-    margin-right: 60px;
+    margin: 0px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
 
-    @media (max-width: 768px) {
+    // Tablet and up
+    @include tablet-and-up {
       margin-right: 60px;
-    }
-
-    @media (max-width: 425px) {
-      margin: 0px;
     }
   }
 
   & .userNameContainer {
+    // Mobile First
     height: 100%;
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 16px;
     position: relative;
 
-    @media (max-width: 768px) {
-      gap: 16px;
+    // Desktop and up
+    @include desktop-and-up {
+      gap: 40px;
     }
 
     & .userName {

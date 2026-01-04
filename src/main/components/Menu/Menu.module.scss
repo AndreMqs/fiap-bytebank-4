@@ -1,27 +1,32 @@
-.menuContainer {
-  width: 180px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  background-color: #F5F5F5;
-  padding: 16px 24px;
-  padding-bottom: 32px;
+@import '../../utils/breakpoints';
 
-  @media (max-width: 768px) {
+.menuContainer {
+  // Mobile First - hidden on mobile
+  display: none;
+
+  // Tablet and up
+  @include tablet-and-up {
+    display: flex;
     width: 100%;
     height: 100%;
+    padding: 32px 0px;
+    padding-top: 16px;
     padding-bottom: 32px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     background-color: transparent;
     gap: 16px;
-    padding: 32px 0px;
-    padding-top: 16px;
   }
 
-  @media (max-width: 425px) {
-    display: none;
+  // Desktop and up
+  @include desktop-and-up {
+    width: 180px;
+    border-radius: 8px;
+    flex-direction: column;
+    background-color: #F5F5F5;
+    padding: 16px 24px;
+    padding-bottom: 32px;
   }
 
   .menuItem {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
@@ -6,9 +6,7 @@ import Badge from '@mui/material/Badge';
 import Edit from "../../images/Edit.svg";
 import Filter from "../../images/Filter.svg";
 import StatementList from './StatementList/StatementList';
-import FilterModal from './FilterModal/FilterModal';
-import EditTransactionModal from './EditTransactionModal/EditTransactionModal';
-import DeleteTransactionModal from './DeleteTransactionModal/DeleteTransactionModal';
+import { ComponentLoadingFallback } from '../../../presentation/components/layout/LoadingFallback';
 import { useUpdateTransaction } from '../../hooks/useUpdateTransaction';
 import { useDeleteTransaction } from '../../hooks/useDeleteTransaction';
 import { useTransactionsData } from '../../hooks/useTransactionsData';
@@ -16,6 +14,10 @@ import { getStatementByMonth } from '../../utils/statementUtils';
 import { filterTransactions, getActiveFiltersCount } from '../../utils/filterUtils';
 import { StatementProps, FilterCriteria } from '../../types/statement';
 import { Transaction } from '../../types/api';
+
+const FilterModal = lazy(() => import('./FilterModal/FilterModal'));
+const EditTransactionModal = lazy(() => import('./EditTransactionModal/EditTransactionModal'));
+const DeleteTransactionModal = lazy(() => import('./DeleteTransactionModal/DeleteTransactionModal'));
 
 import styles from "./Statement.module.scss"
 
@@ -204,28 +206,40 @@ export default function Statement(props: StatementProps) {
         )}
       </div>
       
-      <FilterModal
-        open={isFilterModalOpen}
-        onClose={handleCloseFilterModal}
-        onApplyFilters={handleApplyFilters}
-        currentFilters={activeFilters}
-      />
+      {isFilterModalOpen && (
+        <Suspense fallback={<ComponentLoadingFallback />}>
+          <FilterModal
+            open={isFilterModalOpen}
+            onClose={handleCloseFilterModal}
+            onApplyFilters={handleApplyFilters}
+            currentFilters={activeFilters}
+          />
+        </Suspense>
+      )}
 
-      <EditTransactionModal
-        open={!!editingTransaction}
-        transaction={editingTransaction}
-        onClose={handleCloseEditModal}
-        onSave={handleSaveTransaction}
-        isLoading={isUpdating}
-      />
+      {editingTransaction && (
+        <Suspense fallback={<ComponentLoadingFallback />}>
+          <EditTransactionModal
+            open={!!editingTransaction}
+            transaction={editingTransaction}
+            onClose={handleCloseEditModal}
+            onSave={handleSaveTransaction}
+            isLoading={isUpdating}
+          />
+        </Suspense>
+      )}
 
-      <DeleteTransactionModal
-        open={!!deletingTransaction}
-        transaction={deletingTransaction}
-        onClose={handleCloseDeleteModal}
-        onConfirm={handleConfirmDelete}
-        isLoading={isDeleting}
-      />
+      {deletingTransaction && (
+        <Suspense fallback={<ComponentLoadingFallback />}>
+          <DeleteTransactionModal
+            open={!!deletingTransaction}
+            transaction={deletingTransaction}
+            onClose={handleCloseDeleteModal}
+            onConfirm={handleConfirmDelete}
+            isLoading={isDeleting}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

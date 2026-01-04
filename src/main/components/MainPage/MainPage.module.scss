@@ -1,3 +1,5 @@
+@import '../../utils/breakpoints';
+
 .flexRowCenterContainer {
   display: flex;
   flex-direction: row;
@@ -6,22 +8,26 @@
 }
 
 .mainContentContainer {
+  // Mobile First
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   width: 100%;
+  padding: 0px 24px;
+  padding-bottom: 36px;
 
-  @media (max-width: 768px) {
+  // Tablet and up
+  @include tablet-and-up {
     flex-direction: column;
     padding: 0px 60px;
     padding-bottom: 70px;
   }
 
-  @media (max-width: 425px) {
-    flex-direction: column;
-    padding: 0px 24px;
-    padding-bottom: 36px;
+  // Desktop and up
+  @include desktop-and-up {
+    flex-direction: row;
+    padding: 0;
   }
 }
 
@@ -38,40 +44,42 @@
 }
 
 .middleContentContainer {
+  // Mobile First
   width: 100%;
-  margin: 0px 24px;;
+  margin: 0px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 
-  @media (max-width: 768px) {
-    width: 100%;
-    margin: 0px;
-    gap: 16px;
+  // Desktop and up
+  @include desktop-and-up {
+    margin: 0px 24px;
   }
 }
 
 .statementContainer {
-  width: 282px;
+  // Mobile First
+  width: 100%;
   height: 100%;
 
-  @media (max-width: 768px) {
-    width: 100%;
+  // Desktop and up
+  @include desktop-and-up {
+    width: 282px;
   }
 
-  @media (max-width: 425px) {
-    width: 100%;
+  // Large desktop
+  @include large-desktop {
+    width: 320px;
   }
 }
 
 #statementSection {
-  @media (max-width: 768px) {
-    width: 100%;
-    margin-top: 16px;
-  }
+  // Mobile First
+  width: 100%;
+  margin-top: 16px;
 
-  @media (max-width: 425px) {
-    width: 100%;
-    margin-top: 16px;
+  // Desktop and up
+  @include desktop-and-up {
+    margin-top: 0;
   }
 }

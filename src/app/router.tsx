@@ -1,15 +1,24 @@
 import React, { Suspense } from 'react'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { RequireAuth } from '../presentation/components/layout/RequireAuth'
+import { RouteLoadingFallback } from '../presentation/components/layout/LoadingFallback'
 
 const HomeModule = React.lazy(() => import('../home/App'))
 const MainModule = React.lazy(() => import('../main/App'))
+
+export const prefetchRoute = (route: 'home' | 'main') => {
+  if (route === 'home') {
+    import('../home/App')
+  } else if (route === 'main') {
+    import('../main/App')
+  }
+}
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <Suspense fallback={<div>Carregando...</div>}>
+      <Suspense fallback={<RouteLoadingFallback />}>
         <HomeModule />
       </Suspense>
     ),
@@ -18,7 +27,7 @@ export const router = createBrowserRouter([
     path: '/main',
     element: (
       <RequireAuth>
-        <Suspense fallback={<div>Carregando área logada...</div>}>
+        <Suspense fallback={<RouteLoadingFallback />}>
           <MainModule />
         </Suspense>
       </RequireAuth>

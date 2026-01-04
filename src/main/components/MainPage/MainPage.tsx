@@ -1,16 +1,18 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, Suspense, lazy } from "react";
 
 import { useUserData } from "../../hooks/useUserData";
 import { useTransactionsData } from "../../hooks/useTransactionsData";
 import { useDeleteTransaction } from "../../hooks/useDeleteTransaction";
+import { ComponentLoadingFallback, DataLoadingFallback } from "../../../presentation/components/layout/LoadingFallback";
 import Header from "../Header/Header";
 import Menu from "../Menu/Menu";
 import Summary from "../Summary/Summary";
 import NewTransaction from "../NewTransaction/NewTransaction";
 import Statement from "../Statement/Statement";
-import Investments from "../Investments/Investments";
 import OtherServices from "../OtherServices/OtherServices";
-import CategoryChart from "../CategoryChart/CategoryChart";
+
+const CategoryChart = lazy(() => import("../CategoryChart/CategoryChart"));
+const Investments = lazy(() => import("../Investments/Investments"));
 
 import styles from "./MainPage.module.scss";
 
@@ -61,11 +63,19 @@ export default function MainPage() {
       case "Transferências":
         return <NewTransaction />;
       case "Investimentos":
-        return <Investments />;
+        return (
+          <Suspense fallback={<ComponentLoadingFallback />}>
+            <Investments />
+          </Suspense>
+        );
       case "Outros serviços":
         return <OtherServices />;
       default:
-        return <CategoryChart />;
+        return (
+          <Suspense fallback={<ComponentLoadingFallback />}>
+            <CategoryChart />
+          </Suspense>
+        );
     }
   }, [selectedMenu]);
 
@@ -73,7 +83,7 @@ export default function MainPage() {
     if (isLoadingUser || isLoadingTransactions) {
       return (
         <section id="middleContent" className={styles.middleContentContainer}>
-          <div>Carregando dados...</div>
+          <DataLoadingFallback />
         </section>
       );
     }

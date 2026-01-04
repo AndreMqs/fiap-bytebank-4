@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import HeaderHomePage from "./HeaderHomePage/HeaderHomePage";
 import ContentHomePage from "./ContentHomePage/ContentHomePage";
 import FooterHomePage from './FooterHomePage/FooterHomePage';
-import LoginModal from "./LoginModal/LoginModal";
-import RegisterModal from "./RegisterModal/RegisterModal";
+import { ComponentLoadingFallback } from '../../../presentation/components/layout/LoadingFallback';
+
+const LoginModal = lazy(() => import("./LoginModal/LoginModal"));
+const RegisterModal = lazy(() => import("./RegisterModal/RegisterModal"));
 
 import styles from "./HomePage.module.scss"
 
@@ -34,14 +36,22 @@ export default function HomePage() {
 
   return (
     <div className={styles.homePageContainer}>
-      <LoginModal 
-        open={openLogin} 
-        onClose={toggleLogin} 
-      />
-      <RegisterModal 
-        open={openRegister} 
-        onClose={toggleRegister} 
-      />
+      {openLogin && (
+        <Suspense fallback={<ComponentLoadingFallback />}>
+          <LoginModal 
+            open={openLogin} 
+            onClose={toggleLogin} 
+          />
+        </Suspense>
+      )}
+      {openRegister && (
+        <Suspense fallback={<ComponentLoadingFallback />}>
+          <RegisterModal 
+            open={openRegister} 
+            onClose={toggleRegister} 
+          />
+        </Suspense>
+      )}
       <HeaderHomePage 
         onOpenLogin={toggleLogin} 
         onOpenRegister={toggleRegister}
