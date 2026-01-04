@@ -14,20 +14,18 @@
   align-items: flex-start;
   justify-content: center;
   width: 100%;
-  padding: 0px 24px;
-  padding-bottom: 36px;
+  padding: 24px;
 
   // Tablet and up
   @include tablet-and-up {
     flex-direction: column;
-    padding: 0px 60px;
-    padding-bottom: 70px;
+    padding: 24px 60px;
   }
 
   // Desktop and up
   @include desktop-and-up {
     flex-direction: row;
-    padding: 0;
+    padding: 24px;
   }
 }
 
