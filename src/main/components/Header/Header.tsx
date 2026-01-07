@@ -20,7 +20,7 @@ import styles from "./Header.module.scss"
 
 export default function Header(props: HeaderProps) {
   const {items, onMenuClick} = props;
-  const { logout, user: authUser } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   

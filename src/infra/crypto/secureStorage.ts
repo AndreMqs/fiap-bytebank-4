@@ -49,7 +49,8 @@ export const secureStorage = {
       const serialized = JSON.stringify(value)
       const cipher = encrypt(serialized)
       localStorage.setItem(key, cipher)
-    } catch {
+    } catch (error) {
+      console.error('Erro ao salvar no secureStorage:', error)
     }
   },
 
@@ -60,7 +61,8 @@ export const secureStorage = {
       const decrypted = decrypt(cipher)
       if (!decrypted) return null
       return JSON.parse(decrypted) as T
-    } catch {
+    } catch (error) {
+      console.error('Erro ao ler do secureStorage:', error)
       return null
     }
   },
@@ -68,7 +70,8 @@ export const secureStorage = {
   remove(key: string) {
     try {
       localStorage.removeItem(key)
-    } catch {
+    } catch (error) {
+      console.error('Erro ao remover do secureStorage:', error)
     }
   },
 }

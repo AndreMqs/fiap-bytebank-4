@@ -3,7 +3,6 @@ import { useAuth } from '../../hooks/useAuth'
 import { transactionRepository } from '../../infra/repositories/TransactionRepository'
 import { queryKeys } from '../../infra/react-query/queryKeys'
 import { useMemo } from 'react'
-import type { QueryDocumentSnapshot } from 'firebase/firestore'
 
 const ITEMS_PER_PAGE = 20
 

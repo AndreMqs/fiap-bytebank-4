@@ -8,7 +8,6 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
 } from 'firebase/auth'
-import { doc, setDoc, Timestamp } from 'firebase/firestore'
 import { secureStorage } from '../../infra/crypto/secureStorage'
 import { userRepository } from '../../infra/repositories/UserRepository'
 
@@ -105,32 +104,27 @@ export class AuthViewModel {
         error: null,
         initialized: true,
       })
-    } catch (err: any) {
+    } catch (err: unknown) {
       let errorMessage = 'Erro ao autenticar'
+      const error = err as { code?: string; message?: string; error?: { message?: string } }
       
-      if (err?.code === 'auth/user-not-found') {
+      if (error.code === 'auth/user-not-found') {
         errorMessage = 'Usuário ou senha inválida'
-      } else if (err?.code === 'auth/wrong-password') {
+      } else if (error.code === 'auth/wrong-password') {
         errorMessage = 'Usuário ou senha inválida'
-      } else if (err?.code === 'auth/invalid-credential') {
+      } else if (error.code === 'auth/invalid-credential') {
         errorMessage = 'Usuário ou senha inválida'
-      } else if (err?.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Email inválido'
-      } else if (err?.code === 'auth/too-many-requests') {
+      } else if (error.code === 'auth/too-many-requests') {
         errorMessage = 'Muitas tentativas. Tente novamente mais tarde.'
-      } 
-
-      else if (err?.error?.message === 'INVALID_LOGIN_CREDENTIALS' || 
-               err?.message?.includes('INVALID_LOGIN_CREDENTIALS')) {
+      } else if (error.error?.message === 'INVALID_LOGIN_CREDENTIALS' || 
+                 error.message?.includes('INVALID_LOGIN_CREDENTIALS')) {
         errorMessage = 'Usuário ou senha inválida'
-      }
-
-      else if (typeof err?.message === 'string' && err.message.includes('auth/invalid-credential')) {
+      } else if (typeof error.message === 'string' && error.message.includes('auth/invalid-credential')) {
         errorMessage = 'Usuário ou senha inválida'
-      }
-
-      else if (err?.message && !err.message.includes('Firebase:')) {
-        errorMessage = err.message
+      } else if (error.message && !error.message.includes('Firebase:')) {
+        errorMessage = error.message
       }
 
       this.state$.next({
@@ -207,17 +201,18 @@ export class AuthViewModel {
         error: null,
         initialized: true,
       })
-    } catch (err: any) {
+    } catch (err: unknown) {
       let errorMessage = 'Erro ao criar conta'
+      const error = err as { code?: string; message?: string }
       
-      if (err?.code === 'auth/email-already-in-use') {
+      if (error.code === 'auth/email-already-in-use') {
         errorMessage = 'Este email já está em uso'
-      } else if (err?.code === 'auth/weak-password') {
+      } else if (error.code === 'auth/weak-password') {
         errorMessage = 'Senha muito fraca'
-      } else if (err?.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Email inválido'
-      } else if (err?.message) {
-        errorMessage = err.message
+      } else if (error.message) {
+        errorMessage = error.message
       }
 
       this.state$.next({
@@ -246,12 +241,12 @@ export class AuthViewModel {
         ...initialState,
         initialized: true,
       })
-    } catch (err: any) {
-
+    } catch (err: unknown) {
+      const error = err as { message?: string }
       this.state$.next({
         ...initialState,
         initialized: true,
-        error: err?.message || 'Erro ao fazer logout',
+        error: error.message || 'Erro ao fazer logout',
       })
     }
   }

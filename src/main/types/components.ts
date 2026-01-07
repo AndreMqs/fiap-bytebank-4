@@ -31,7 +31,7 @@ export interface ManualTransactionFormProps {
 
 export interface CSVTransactionPreviewProps {
   transactions: CSVTransaction[];
-  onClear: () => void;
+  onClear?: () => void;
 }
 
 export interface CSVUploadProps {

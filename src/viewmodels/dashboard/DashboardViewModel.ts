@@ -33,11 +33,12 @@ export class DashboardViewModel {
     try {
       const transactions = await this.getTransactionsUseCase.execute(userId)
       this.state$.next({ loading: false, error: null, transactions })
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { message?: string }
       this.state$.next({
         ...this.state$.value,
         loading: false,
-        error: err?.message ?? 'Erro ao carregar transações',
+        error: error.message ?? 'Erro ao carregar transações',
       })
     }
   }

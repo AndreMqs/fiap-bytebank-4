@@ -190,11 +190,28 @@ O projeto estará disponível em `http://localhost:5173`
 ### Scripts Disponíveis
 
 ```bash
-npm run dev      # Desenvolvimento
-npm run build    # Build de produção
-npm run preview  # Preview da build
-npm run lint     # Linter
+npm run dev        # Desenvolvimento
+npm run build      # Build de produção
+npm run preview    # Preview da build
+npm run lint       # Executar ESLint
+npm run lint:fix   # Executar ESLint e corrigir automaticamente
 ```
+
+### ESLint
+
+O projeto utiliza **ESLint 9** com configuração moderna (flat config) para garantir qualidade de código:
+
+- ✅ Verificação de erros TypeScript
+- ✅ Regras do React Hooks
+- ✅ Regras de React Refresh
+- ✅ Detecção de variáveis não utilizadas
+- ✅ Avisos sobre uso de `any`
+
+**Configuração:** `eslint.config.js`
+
+**Comandos:**
+- `npm run lint` - Verificar erros e warnings
+- `npm run lint:fix` - Corrigir automaticamente problemas corrigíveis
 
 ---
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { prefetchRoute } from "../../../../app/router";
+import { prefetchRoute } from "../../../../app/routerConfig";
 
 import Logo from "../../../images/Logo.svg";
 import LogoIcon from "../../../images/LogoIcon.svg";

@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
-export function useReactive(obs:any){
-  const [state,setState] = useState()
-  useEffect(()=>{ const s=obs.subscribe(setState); return ()=>s.unsubscribe() },[obs])
+import { Observable } from 'rxjs'
+
+export function useReactive<T>(obs: Observable<T>): T | undefined {
+  const [state, setState] = useState<T>()
+  useEffect(() => {
+    const s = obs.subscribe(setState)
+    return () => s.unsubscribe()
+  }, [obs])
   return state
 }

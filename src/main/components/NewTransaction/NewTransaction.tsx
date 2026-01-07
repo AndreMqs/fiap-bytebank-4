@@ -6,7 +6,7 @@ import { CSVTransactionPreview } from './CSVTransactionPreview';
 import { useTransactionForm } from '../../hooks/useTransactionForm';
 import { useAddTransaction } from '../../hooks/useAddTransaction';
 import { useValueValidation } from '../../utils/valueValidationUtils';
-import { createTransactionFromForm, createTransactionsFromCSV, getButtonText } from '../../utils/transactionUtils';
+import { createTransactionsFromCSV, getButtonText } from '../../utils/transactionUtils';
 import { NewTransactionProps } from '../../types/components';
 import { CSVTransaction } from '../../types/transaction';
 import styles from "./NewTransaction.module.scss";

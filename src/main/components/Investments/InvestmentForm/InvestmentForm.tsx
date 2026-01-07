@@ -28,7 +28,7 @@ export default function InvestmentForm({ onSubmit, isLoading = false }: Investme
           return 'Tipo é obrigatório';
         }
         return '';
-      case 'value':
+      case 'value': {
         if (!value || value.trim() === '') {
           return 'Valor é obrigatório';
         }
@@ -37,6 +37,7 @@ export default function InvestmentForm({ onSubmit, isLoading = false }: Investme
           return 'Valor deve ser um número maior que zero';
         }
         return '';
+      }
       default:
         return '';
     }

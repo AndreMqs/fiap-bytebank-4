@@ -2,7 +2,7 @@ import { CSVTransactionPreviewProps } from '../../types/components';
 
 import styles from './NewTransaction.module.scss';
 
-export const CSVTransactionPreview = ({ transactions, onClear }: CSVTransactionPreviewProps) => {
+export const CSVTransactionPreview = ({ transactions }: CSVTransactionPreviewProps) => {
   if (transactions.length === 0) return null;
 
   return (

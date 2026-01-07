@@ -16,7 +16,7 @@ const ChartWrapper = ({ children, width, height }: { children: React.ReactNode; 
 };
 
 export default function Investments() {
-  const { totals, chartData, isLoading, refetch } = useInvestmentsData();
+  const { totals, chartData, isLoading } = useInvestmentsData();
   const { addInvestmentAsync, isLoading: isAdding } = useAddInvestment();
   const { rendaFixa, rendaVariavel, total } = totals;
   const data = chartData;

@@ -65,7 +65,7 @@ export default function EditTransactionModal({
           return 'Categoria é obrigatória';
         }
         return '';
-      case 'value':
+      case 'value': {
         if (!value || value.trim() === '') {
           return 'Valor é obrigatório';
         }
@@ -74,7 +74,8 @@ export default function EditTransactionModal({
           return 'Valor deve ser um número maior que zero';
         }
         return '';
-      case 'date':
+      }
+      case 'date': {
         if (!value || value.trim() === '') {
           return 'Data é obrigatória';
         }
@@ -88,6 +89,7 @@ export default function EditTransactionModal({
           return 'Data não pode ser futura';
         }
         return '';
+      }
       default:
         return '';
     }
