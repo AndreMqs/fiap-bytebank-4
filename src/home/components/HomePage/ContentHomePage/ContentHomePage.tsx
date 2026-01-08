@@ -4,6 +4,7 @@ import Estrela from "../../../images/Estrela.svg";
 import IlustracaoBanner from "../../../images/IlustracaoBanner.svg";
 import Presente from "../../../images/Presente.svg";
 import Saque from "../../../images/Saque.svg";
+import { prefetchLoginModal, prefetchRegisterModal } from "../prefetchModals";
 
 interface ContentHomePageProps {
   onOpenLogin: () => void;
@@ -174,8 +175,20 @@ export default function ContentHomePage({ onOpenLogin, onOpenRegister }: Content
 
         {isMobile && (
           <div style={styles.buttonsStyle}>
-            <button style={styles.openAccountButtonStyle} onClick={onOpenRegister}>Abrir conta</button>
-            <button style={styles.loginButtonStyle} onClick={onOpenLogin}>Já tenho conta</button>
+            <button 
+              style={styles.openAccountButtonStyle} 
+              onClick={onOpenRegister}
+              onMouseEnter={() => prefetchRegisterModal()}
+            >
+              Abrir conta
+            </button>
+            <button 
+              style={styles.loginButtonStyle} 
+              onClick={onOpenLogin}
+              onMouseEnter={() => prefetchLoginModal()}
+            >
+              Já tenho conta
+            </button>
           </div>
         )}
 

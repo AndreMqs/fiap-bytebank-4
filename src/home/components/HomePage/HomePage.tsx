@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import HeaderHomePage from "./HeaderHomePage/HeaderHomePage";
 import ContentHomePage from "./ContentHomePage/ContentHomePage";
 import FooterHomePage from './FooterHomePage/FooterHomePage';
-import { ComponentLoadingFallback } from '../../../presentation/components/layout/LoadingFallback';
+import { ModalLoadingFallback } from './ModalLoadingFallback';
 
 const LoginModal = lazy(() => import("./LoginModal/LoginModal"));
 const RegisterModal = lazy(() => import("./RegisterModal/RegisterModal"));
@@ -37,7 +37,7 @@ export default function HomePage() {
   return (
     <div className={styles.homePageContainer}>
       {openLogin && (
-        <Suspense fallback={<ComponentLoadingFallback />}>
+        <Suspense fallback={<ModalLoadingFallback />}>
           <LoginModal 
             open={openLogin} 
             onClose={toggleLogin} 
@@ -45,7 +45,7 @@ export default function HomePage() {
         </Suspense>
       )}
       {openRegister && (
-        <Suspense fallback={<ComponentLoadingFallback />}>
+        <Suspense fallback={<ModalLoadingFallback />}>
           <RegisterModal 
             open={openRegister} 
             onClose={toggleRegister} 

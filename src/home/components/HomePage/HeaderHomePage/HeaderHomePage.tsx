@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { prefetchRoute } from "../../../../app/routerConfig";
+import { prefetchLoginModal, prefetchRegisterModal } from "../prefetchModals";
 
 import Logo from "../../../images/Logo.svg";
 import LogoIcon from "../../../images/LogoIcon.svg";
@@ -128,7 +129,10 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
               width: isTablet ? 144 : 180,
             }}
             onClick={onOpenRegister}
-            onMouseEnter={() => prefetchRoute('main')}
+            onMouseEnter={() => {
+              prefetchRoute('main');
+              prefetchRegisterModal();
+            }}
           >
             {getBtnOpenAccountText()}
           </button>
@@ -140,7 +144,10 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
               marginLeft: isTablet ? 16 : 24,
             }}
             onClick={onOpenLogin}
-            onMouseEnter={() => prefetchRoute('main')}
+            onMouseEnter={() => {
+              prefetchRoute('main');
+              prefetchLoginModal();
+            }}
           >
             Já tenho conta
           </button>
