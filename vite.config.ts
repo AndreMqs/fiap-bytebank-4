@@ -12,7 +12,6 @@ export default defineConfig({
           
           // UI libraries
           'vendor-mui': ['@mui/material', '@mui/icons-material'],
-          'vendor-emotion': ['@emotion/react', '@emotion/styled'],
           
           // Data fetching and state management
           'vendor-query': ['@tanstack/react-query'],
