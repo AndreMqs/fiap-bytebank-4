@@ -79,5 +79,6 @@
   // Desktop and up
   @include desktop-and-up {
     margin-top: 0;
+    width: auto;
   }
 }
