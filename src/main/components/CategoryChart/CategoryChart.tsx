@@ -1,7 +1,8 @@
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 import { useEffect, useState } from 'react';
 
-import { useStore } from '../../store/useStore';
+import { useTransactionsData } from '../../hooks/useTransactionsData';
+import { useTransactionCalculations } from '../../hooks/useTransactionCalculations';
 
 import styles from './CategoryChart.module.scss';
 
@@ -14,8 +15,9 @@ const ChartWrapper = ({ children, width, height }: { children: React.ReactNode; 
 };
 
 export default function CategoryChart() {
-  const { getCategoryData } = useStore();
-  const data = getCategoryData();
+
+  const { transactions } = useTransactionsData();
+  const { categoryData } = useTransactionCalculations(transactions);
 
   const [isMobile, setIsMobile] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -28,14 +30,15 @@ export default function CategoryChart() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+
   if (!hasMounted) return null;
 
-  if (!data || data.length === 0) {
+  if (!categoryData || categoryData.length === 0) {
     return (
       <div className={styles.categoryChartContainer}>
         <div className={styles.categoryChartContent}>
           <span className={styles.title}>Gastos por Categoria</span>
-          <div>Nenhum dado disponível</div>
+          <div className={styles.noData}>Nenhum dado disponível</div>
         </div>
       </div>
     );
@@ -51,7 +54,7 @@ export default function CategoryChart() {
               <ChartWrapper width={300} height={180}>
                 <PieChart width={300} height={180}>
                   <Pie
-                    data={data}
+                    data={categoryData}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
@@ -60,14 +63,14 @@ export default function CategoryChart() {
                     innerRadius={35}
                     label={false}
                   >
-                    {data.map((entry, index) => (
+                    {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                 </PieChart>
               </ChartWrapper>
               <div className={styles.mobileLegendWrapper}>
-                {data.map((item) => (
+                {categoryData.map((item) => (
                   <div key={item.name} className={styles.mobileLegendItem}>
                     <span className={styles.mobileLegendDot} style={{ backgroundColor: item.color }} />
                     <span className={styles.mobileLegendText}>{item.name}</span>
@@ -80,7 +83,7 @@ export default function CategoryChart() {
               <ChartWrapper width={400} height={220}>
                 <PieChart width={400} height={220}>
                   <Pie
-                    data={data}
+                    data={categoryData}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
@@ -89,7 +92,7 @@ export default function CategoryChart() {
                     innerRadius={40}
                     label={false}
                   >
-                    {data.map((entry, index) => (
+                    {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>

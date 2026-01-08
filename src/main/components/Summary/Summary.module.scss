@@ -1,29 +1,35 @@
+@import '../../utils/breakpoints';
+
 .summaryContainer {
+  // Mobile First
   position: relative;
-  height: 402px;
   background-color: #004D61;
   border-radius: 8px;
   padding: 24px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
+  height: 100%;
+  padding-bottom: 400px;
   background-image: url('../../images/SaldoBackground.svg');
-  background-position: bottom left;
+  background-origin: initial;
+  background-position: 30% 95%;
   background-repeat: no-repeat;
-  background-origin: content-box, padding-box;
+  margin-bottom: 24px;
 
-  @media (max-width: 768px) {
+  // Tablet and up
+  @include tablet-and-up {
     width: 100%;
     margin-bottom: 32px;
+    height: 402px;
+    padding-bottom: 24px;
+    background-origin: content-box, padding-box;
+    background-position: bottom left;
   }
 
-  @media (max-width: 425px) {
-    margin-bottom: 24px;
-    flex-direction: column;
-    height: 100%;
-    padding-bottom: 400px;
-    background-origin: initial;
-    background-position: 30% 95%;
+  // Desktop and up
+  @include desktop-and-up {
+    flex-direction: row;
   }
 
   & .summaryTitle {
@@ -49,19 +55,22 @@
   }
 
   & .moneyContainer {
+    // Mobile First
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     margin-top: 72px;
-    max-width: 50%;
+    max-width: 100%;
     
-    @media (max-width: 768px) {
+    // Tablet and up
+    @include tablet-and-up {
       margin-top: 64px;
     }
     
-    @media (max-width: 425px) {
-      max-width: 100%;
+    // Desktop and up
+    @include desktop-and-up {
+      max-width: 50%;
     }
   }
 

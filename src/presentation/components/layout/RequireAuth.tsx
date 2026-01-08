@@ -8,7 +8,7 @@ export function RequireAuth({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (initialized && !loading && !user) {
-      navigate('/login', { replace: true })
+      navigate('/?login=true', { replace: true })
     }
   }, [initialized, loading, user, navigate])
 

@@ -8,7 +8,7 @@ import styles from "./Select.module.scss"
 
 
 export default function Select(props: SelectProps) {
-  const {value, options, placeholder, onChange} = props;
+  const {value, options, placeholder, onChange, onBlur} = props;
   const [selectValue, setSelectValue] = useState<string>(placeholder ?? '');
 
   const MenuProps = {
@@ -44,6 +44,7 @@ export default function Select(props: SelectProps) {
       className={styles.transactionSelect}
       value={selectValue}
       onChange={handleItemSelected}
+      onBlur={onBlur}
       MenuProps={MenuProps}
     >
       <MenuItem disabled value={placeholder}>
@@ -69,4 +70,5 @@ interface SelectProps {
   options: string[];
   placeholder?: string;
   style?: React.CSSProperties;
+  onBlur?: () => void;
 }

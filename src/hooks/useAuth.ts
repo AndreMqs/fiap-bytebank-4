@@ -3,6 +3,7 @@ import { authViewModel, AuthState } from '../viewmodels/auth/AuthViewModel'
 
 export function useAuth(): AuthState & {
   login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string, name: string) => Promise<void>
   logout: () => Promise<void>
 } {
   const state = useReactive<AuthState>(authViewModel.state)
@@ -13,9 +14,9 @@ export function useAuth(): AuthState & {
       loading: true,
       error: null,
       initialized: false,
-      bypass: false,
     }),
     login: (email: string, password: string) => authViewModel.login(email, password),
+    register: (email: string, password: string, name: string) => authViewModel.register(email, password, name),
     logout: () => authViewModel.logout(),
   }
 }

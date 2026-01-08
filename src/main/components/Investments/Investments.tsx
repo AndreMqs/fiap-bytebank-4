@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Legend } from 'recharts';
 
-import { INVESTMENTS_MOCK } from '../../utils/constants';
+import { useInvestmentsData } from '../../hooks/useInvestmentsData';
+import { useAddInvestment } from '../../hooks/useAddInvestment';
+import InvestmentForm from './InvestmentForm/InvestmentForm';
 
 import styles from './Investments.module.scss';
 
@@ -14,13 +16,14 @@ const ChartWrapper = ({ children, width, height }: { children: React.ReactNode; 
 };
 
 export default function Investments() {
-  const rendaFixa = INVESTMENTS_MOCK.rendaFixa;
-  const rendaVariavel = INVESTMENTS_MOCK.rendaVariavel;
-  const total = INVESTMENTS_MOCK.total;
-  const data = INVESTMENTS_MOCK.chartData;
+  const { totals, chartData, isLoading } = useInvestmentsData();
+  const { addInvestmentAsync, isLoading: isAdding } = useAddInvestment();
+  const { rendaFixa, rendaVariavel, total } = totals;
+  const data = chartData;
 
   const [isMobile, setIsMobile] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
@@ -32,10 +35,46 @@ export default function Investments() {
 
   if (!hasMounted) return null;
 
+  if (isLoading) {
+    return (
+      <div className={styles.investmentsContainer}>
+        <div className={styles.investmentsContent}>
+          <span className={styles.title}>Investimentos</span>
+          <div>Carregando investimentos...</div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleAddInvestment = async (data: { type: 'renda_fixa' | 'renda_variavel'; value: number }) => {
+    try {
+      await addInvestmentAsync(data);
+      setShowForm(false);
+    } catch (error) {
+      console.error('Erro ao adicionar investimento:', error);
+    }
+  };
+
   return (
     <div className={styles.investmentsContainer}>
       <div className={styles.investmentsContent}>
-        <span className={styles.title}>Investimentos</span>
+        <div className={styles.headerContainer}>
+          <span className={styles.title}>Investimentos</span>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className={styles.toggleFormButton}
+          >
+            {showForm ? 'Ocultar Formulário' : 'Adicionar Investimento'}
+          </button>
+        </div>
+
+        {showForm && (
+          <InvestmentForm
+            onSubmit={handleAddInvestment}
+            isLoading={isAdding}
+          />
+        )}
+
         <span className={styles.total}>Total: R$ {total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
         <div className={styles.yields}>
           <div className={styles.yieldBox}>
@@ -48,8 +87,13 @@ export default function Investments() {
           </div>
         </div>
         <span className={styles.statistics}>Estatísticas</span>
-        <div className={styles.chartContainer}>
-          {isMobile ? (
+        {data.length === 0 ? (
+          <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+            Nenhum investimento cadastrado ainda.
+          </div>
+        ) : (
+          <div className={styles.chartContainer}>
+            {isMobile ? (
             <div className={styles.mobileChartAndLegend}>
               <ChartWrapper width={300} height={180}>
                 <PieChart width={300} height={180}>
@@ -106,7 +150,8 @@ export default function Investments() {
               </ChartWrapper>
             </div>
           )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

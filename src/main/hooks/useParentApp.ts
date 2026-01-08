@@ -9,11 +9,11 @@ declare global {
 
 export const useUser = () => {
   const setUserName = (name: string|null|undefined) => {
-    window.global?.setUserName?.(name ?? "Cliente");
+    window.global?.setUserName?.(name ?? "");
   };
 
   const getUserName = () => {
-    return window.global?.getUserName?.() ?? "Cliente";
+    return window.global?.getUserName?.() ?? "";
   };
 
   return { setUserName, getUserName };

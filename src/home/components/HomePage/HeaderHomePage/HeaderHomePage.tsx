@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { IconButton } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { prefetchRoute } from "../../../../app/routerConfig";
 
 import Logo from "../../../images/Logo.svg";
 import LogoIcon from "../../../images/LogoIcon.svg";
@@ -38,7 +37,7 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
       alignItems: "center",
       height: 96,
       padding: isMobile ? "0px 24px" : isTablet ? "0px 60px" : undefined,
-      justifyContent: isMobile ? "space-between" : "space-around",
+      justifyContent: isMobile ? "center" : "space-around",
     },
     logoAndLinks: {
       display: "flex",
@@ -83,10 +82,6 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
       border: "2px solid #47A138",
       color: "#47A138",
       backgroundColor: "#000000",
-    },
-    menuIcon: {
-      color: "#47A138",
-      fontSize: 32,
     },
   };
 
@@ -133,6 +128,7 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
               width: isTablet ? 144 : 180,
             }}
             onClick={onOpenRegister}
+            onMouseEnter={() => prefetchRoute('main')}
           >
             {getBtnOpenAccountText()}
           </button>
@@ -144,6 +140,7 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
               marginLeft: isTablet ? 16 : 24,
             }}
             onClick={onOpenLogin}
+            onMouseEnter={() => prefetchRoute('main')}
           >
             Já tenho conta
           </button>
@@ -155,9 +152,6 @@ export default function HeaderHomePage({ onOpenLogin, onOpenRegister }: HeaderHo
   const renderMobileHeader = () => {
     return (
       <>
-        <IconButton>
-          <MenuIcon style={styles.menuIcon} />
-        </IconButton>
         {getLogo()}
       </>
     );

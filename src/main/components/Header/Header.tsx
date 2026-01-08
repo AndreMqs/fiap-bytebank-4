@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
+import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -9,16 +11,25 @@ import Fechar from "../../images/Fechar.svg";
 
 import { HeaderProps } from "../../types/header";
 
-import { useUser } from "../../hooks/useParentApp";
+import { useAuth } from '../../../hooks/useAuth';
+import { useUserData } from '../../hooks/useUserData';
+
 
 import styles from "./Header.module.scss"
 
 
 export default function Header(props: HeaderProps) {
   const {items, onMenuClick} = props;
-  const { getUserName } = useUser();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  const { user } = useUserData();
+  const userName = user?.name || '';
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+  const avatarMenuRef = useRef<HTMLDivElement>(null);
 
   const handleMenuClick = (title: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,17 +38,68 @@ export default function Header(props: HeaderProps) {
     setIsMenuOpen(false);
   };
 
+  const handleAvatarClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsAvatarMenuOpen(!isAvatarMenuOpen);
+  };
+
+  const handleLogout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    queryClient.clear();
+    
+    await logout();
+    
+    navigate('/');
+    
+    setIsAvatarMenuOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(event.target as Node)) {
+        setIsAvatarMenuOpen(false);
+      }
+    };
+
+    if (isAvatarMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isAvatarMenuOpen]);
+
   const renderDesktopHeader = () => {
     return (
-      <span className={styles.userNameContainer}>
-        <span className={styles.userName}>{getUserName()}</span>
-        <img 
-          src={Avatar} 
-          alt="Avatar" 
-          height={40} 
-          width={40}
-        />
-      </span>
+      <div className={styles.userNameContainer} ref={avatarMenuRef}>
+        {userName && <span className={styles.userName}>{userName}</span>}
+        <button 
+          className={styles.avatarButton}
+          onClick={handleAvatarClick}
+          aria-label="Menu do usuário"
+        >
+          <img 
+            src={Avatar} 
+            alt="Avatar" 
+            height={40} 
+            width={40}
+          />
+        </button>
+        {isAvatarMenuOpen && (
+          <div className={styles.avatarMenu}>
+            <button 
+              className={styles.menuItem}
+              onClick={handleLogout}
+            >
+              Sair
+            </button>
+          </div>
+        )}
+      </div>
     );
   }
 
@@ -47,12 +109,30 @@ export default function Header(props: HeaderProps) {
         <IconButton onClick={() => setIsMenuOpen(true)}>
           <MenuIcon className={styles.menuIcon}/>
         </IconButton>
-        <img 
-          src={Avatar} 
-          alt="Avatar" 
-          height={40} 
-          width={40}
-        />
+        <div ref={avatarMenuRef} style={{ position: 'relative' }}>
+          <button 
+            className={styles.avatarButton}
+            onClick={handleAvatarClick}
+            aria-label="Menu do usuário"
+          >
+            <img 
+              src={Avatar} 
+              alt="Avatar" 
+              height={40} 
+              width={40}
+            />
+          </button>
+          {isAvatarMenuOpen && (
+            <div className={styles.avatarMenu}>
+              <button 
+                className={styles.menuItem}
+                onClick={handleLogout}
+              >
+                Sair
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     );
   }

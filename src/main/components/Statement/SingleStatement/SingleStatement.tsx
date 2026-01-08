@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { Chip } from '@mui/material';
 
+import Edit from "../../../images/Edit.svg";
 import Delete from "../../../images/Delete.svg";
 import { parseMoneyValue } from "../../../utils/stringUtils";
 import { SingleStatementProps } from "../../../types/statement";
@@ -10,7 +11,7 @@ import styles from "./SingleStatement.module.scss"
 
 
 export default function SingleStatement(props: SingleStatementProps) {
-  const {transaction, isEditing, deleteTransaction} = props;
+  const {transaction, isEditing, onEdit, onDelete, deleteTransaction} = props;
   const {type, date, value, category} = transaction;
   const [inputValue, setInputValue] = useState<string>(value.toString());
   const [isFocused, setIsFocused] = useState(false);
@@ -19,8 +20,16 @@ export default function SingleStatement(props: SingleStatementProps) {
     setInputValue(value.toString());
   }, [value]);
 
+  const handleEdit = () => {
+    onEdit?.(transaction);
+  };
+
   const handleDelete = () => {
-    deleteTransaction(transaction.id);
+    if (onDelete) {
+      onDelete(transaction);
+    } else if (deleteTransaction) {
+      deleteTransaction(transaction.id);
+    }
   };
 
   const getInputValue = () => {
@@ -73,18 +82,32 @@ export default function SingleStatement(props: SingleStatementProps) {
       </div>
 
       {isEditing && (
-        <button 
-          className={styles.deleteButton}
-          onClick={handleDelete}
-          aria-label="Deletar transação"
-        >
-          <img 
-            src={Delete} 
-            alt="Deletar" 
-            height={16} 
-            width={16}
-          />
-        </button>
+        <div className={styles.actionButtons}>
+          <button 
+            className={styles.editButton}
+            onClick={handleEdit}
+            aria-label="Editar transação"
+          >
+            <img 
+              src={Edit} 
+              alt="Editar" 
+              height={16} 
+              width={16}
+            />
+          </button>
+          <button 
+            className={styles.deleteButton}
+            onClick={handleDelete}
+            aria-label="Deletar transação"
+          >
+            <img 
+              src={Delete} 
+              alt="Deletar" 
+              height={16} 
+              width={16}
+            />
+          </button>
+        </div>
       )}
     </div>
   );

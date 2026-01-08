@@ -72,16 +72,25 @@
     }
   }
 
-  .deleteButton {
+  .actionButtons {
     position: absolute;
     top: 0;
-    right: -30px;
+    right: -60px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .editButton,
+  .deleteButton {
     background: none;
     border: none;
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
     transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.1);
