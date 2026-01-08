@@ -14,10 +14,6 @@ export class UpdateUser {
       throw new Error('ID do usuário é obrigatório')
     }
 
-    if (data.balance !== undefined && data.balance < 0) {
-      throw new Error('Saldo não pode ser negativo')
-    }
-
     if (data.name !== undefined && data.name.trim().length === 0) {
       throw new Error('Nome não pode ser vazio')
     }

@@ -25,6 +25,7 @@ export interface SingleStatementProps {
   isEditing: boolean;
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
+  onUpdate?: (transactionId: number, newValue: number) => Promise<void>;
   deleteTransaction?: (id: number) => Promise<void>; 
 }
 
@@ -33,6 +34,7 @@ export interface StatementListProps {
   isEditing: boolean;
   onEdit?: (transaction: Transaction) => void;
   onDelete?: (transaction: Transaction) => void;
+  onUpdate?: (transactionId: number, newValue: number) => Promise<void>;
   deleteTransaction?: (id: number) => Promise<void>; 
   onLoadMore?: () => void;
   hasMore?: boolean;

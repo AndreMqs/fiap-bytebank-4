@@ -38,6 +38,7 @@ export function useUpdateTransaction() {
       )
       
       if (!result) {
+        console.error('Transação não encontrada com ID:', transactionId)
         throw new Error('Transação não encontrada')
       }
 
@@ -58,15 +59,13 @@ export function useUpdateTransaction() {
       const oldValue = currentTransaction.value
       const newValue = typeof data.value === 'string' 
         ? parseFloat(data.value.replace(',', '.')) 
-        : (data.value || oldValue)
+        : (data.value !== undefined ? data.value : oldValue)
 
       const oldType = currentTransaction.type
       const newType = data.type || oldType
 
       const oldBalanceChange = oldType === 'income' ? oldValue : -oldValue
-      
       const newBalanceChange = newType === 'income' ? newValue : -newValue
-      
       const balanceDiff = newBalanceChange - oldBalanceChange
 
       const currentUser = await getUserUseCase.execute(authUser.uid)
@@ -78,10 +77,27 @@ export function useUpdateTransaction() {
 
       return { transaction: updatedTransaction, newBalance }
     },
-    onSuccess: () => {
-      // Invalidar queries para forçar refetch com dados atualizados
-      queryClient.invalidateQueries({ queryKey: queryKeys.transactions(authUser?.uid) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.user(authUser?.uid) })
+    onSuccess: async () => {
+      if (!authUser?.uid) return;
+      await Promise.all([
+        queryClient.invalidateQueries({ 
+          queryKey: queryKeys.transactions(authUser.uid),
+          refetchType: 'active'
+        }),
+        queryClient.invalidateQueries({ 
+          queryKey: queryKeys.user(authUser.uid),
+          refetchType: 'active'
+        })
+      ])
+      
+      await Promise.all([
+        queryClient.refetchQueries({ 
+          queryKey: queryKeys.user(authUser.uid)
+        }),
+        queryClient.refetchQueries({ 
+          queryKey: queryKeys.transactions(authUser.uid)
+        })
+      ])
     },
     onError: (error) => {
       console.error('Erro ao atualizar transação:', error)

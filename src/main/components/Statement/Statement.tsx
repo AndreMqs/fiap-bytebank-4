@@ -67,10 +67,10 @@ export default function Statement(props: StatementProps) {
       setDisplayedTransactions(initialItems);
       setFrontendHasMore(filteredTransactions.length > ITEMS_PER_PAGE);
     } else {
-      setDisplayedTransactions(filteredTransactions);
+      setDisplayedTransactions(transactions);
       setFrontendHasMore(false);
     }
-  }, [filteredTransactions, hasActiveFilters]);
+  }, [filteredTransactions, hasActiveFilters, transactions]);
 
   const handleLoadMore = async () => {
     if (hasActiveFilters) {
@@ -137,8 +137,26 @@ export default function Statement(props: StatementProps) {
       
       setEditingTransaction(null);
     } catch (error) {
-      console.error('Erro ao salvar transação:', error);
+      console.error('❌ Erro ao salvar transação:', error);
+      throw error; 
     }
+  };
+
+  const handleUpdateValue = async (transactionId: number, newValue: number) => {
+    const transaction = transactions.find(t => t.id === transactionId);
+    if (!transaction) {
+      throw new Error('Transação não encontrada');
+    }
+
+    await updateTransactionAsync({
+      transactionId,
+      data: {
+        type: transaction.type,
+        category: transaction.category,
+        value: newValue.toString(),
+        date: transaction.date,
+      }
+    });
   };
 
   const handleDeleteTransaction = (transaction: Transaction) => {
@@ -198,6 +216,7 @@ export default function Statement(props: StatementProps) {
             isEditing={isEditing}
             onEdit={handleEditTransaction}
             onDelete={handleDeleteTransaction}
+            onUpdate={handleUpdateValue}
             deleteTransaction={deleteTransaction}
             onLoadMore={handleLoadMore}
             hasMore={hasActiveFilters ? frontendHasMore : !!hasNextPage}

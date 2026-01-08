@@ -14,6 +14,7 @@ export default function StatementList(props: StatementListProps) {
     isEditing,
     onEdit,
     onDelete,
+    onUpdate,
     deleteTransaction, 
     onLoadMore, 
     hasMore = false, 
@@ -35,6 +36,7 @@ export default function StatementList(props: StatementListProps) {
           isEditing={isEditing}
           onEdit={onEdit}
           onDelete={onDelete}
+          onUpdate={onUpdate}
           deleteTransaction={deleteTransaction}
           key={`${month}-${statement.id}-${index}`}
         />

@@ -250,35 +250,39 @@ export class TransactionRepository {
       throw new Error('Firestore não está disponível')
     }
 
-    const allTransactions = await this.getTransactions(userId)
-    
-    const transaction = allTransactions.find(t => t.id === numericId)
-    if (!transaction) {
-      return null
-    }
-
     const firestoreId = this.getFirestoreId(numericId)
-    if (!firestoreId) {
-      const ref = collection(this.firestore, 'transactions')
-      const q = query(
-        ref,
-        where('userId', '==', userId),
-        orderBy('date', 'desc')
-      )
-      const snapshot = await getDocs(q)
-      
-      for (const docSnap of snapshot.docs) {
-        const idNumber = this.hashStringToNumber(docSnap.id)
-        this.idMap.set(idNumber, docSnap.id)
-        if (idNumber === numericId) {
-          return { transaction, firestoreId: docSnap.id }
-        }
+    if (firestoreId) {
+      const transaction = await this.getTransaction(firestoreId)
+      if (transaction && transaction.id === numericId) {
+        return { transaction, firestoreId }
       }
-      
-      return null
     }
 
-    return { transaction, firestoreId }
+    const ref = collection(this.firestore, 'transactions')
+    const q = query(
+      ref,
+      where('userId', '==', userId),
+      orderBy('date', 'desc')
+    )
+    const snapshot = await getDocs(q)
+    
+    for (const docSnap of snapshot.docs) {
+      const idNumber = this.hashStringToNumber(docSnap.id)
+      this.idMap.set(idNumber, docSnap.id)
+      if (idNumber === numericId) {
+        const data = docSnap.data() as TransactionDocument
+        const transaction: BankTransaction = {
+          id: idNumber,
+          type: data.type,
+          value: data.value,
+          category: data.category,
+          date: data.date,
+        }
+        return { transaction, firestoreId: docSnap.id }
+      }
+    }
+    
+    return null
   }
 
   private hashStringToNumber(str: string): number {
