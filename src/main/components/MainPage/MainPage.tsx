@@ -110,7 +110,7 @@ export default function MainPage() {
       <main id="mainContent" className={styles.mainContentContainer}>
         <Menu items={menuItems} onMenuClick={handleMenuClick} />
         {renderMiddleContent()}
-        <section id="statementSection">
+        <section className={styles.statementSection}>
           <Statement
             transactions={transactions}
             deleteTransaction={deleteTransaction}
